@@ -1,3 +1,4 @@
+[Aspect]
 public class SessionPrinciples{
     [Precondition]
     public void SessionMustHaveTopicAndHost(OpenSpaceSession session)

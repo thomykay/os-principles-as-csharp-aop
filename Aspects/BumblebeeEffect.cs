@@ -1,3 +1,4 @@
+[Aspect]
 public class BumblebeeEffect{
     [Advice(Target = AdviceTarget.Participant)]
     public void ApplyBumblebeeBehavior(Person person)
@@ -10,5 +11,3 @@ public class BumblebeeEffect{
         }
     }
 }
-
-[Aspect]

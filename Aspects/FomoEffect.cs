@@ -1,3 +1,4 @@
+[Aspect]
 public class FomoEffect{
     [Advice(Target = AdviceTarget.Participant)]
     public void ApplyFomo(Person person, List<OpenSpaceSession> parallelSessions)
@@ -9,4 +10,3 @@ public class FomoEffect{
     }
 }
 
-[Aspect]

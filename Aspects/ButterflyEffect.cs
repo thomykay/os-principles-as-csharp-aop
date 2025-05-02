@@ -1,3 +1,4 @@
+[Aspect]
 public class ButterflyEffect{
     [Advice(Target = AdviceTarget.Participant)]
     public void ApplyButterflyBehavior(Person person)

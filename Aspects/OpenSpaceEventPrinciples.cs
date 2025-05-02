@@ -1,3 +1,4 @@
+[Aspect]
 public class OpenSpaceEventPrinciples
 {
     [Precondition]
