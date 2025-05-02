@@ -1,80 +1,48 @@
-public class OpenSpaceEventPrinciples
+public class OpenSpaceEvent
 {
-    [Precondition]
-    public void WhoeverComesAreTheRightPeople(IEnumerable<Person> participants)
+    public List<OpenSpaceSession> Sessions { get; set; }
+    public List<Person> Participants { get; set; }
+
+    [Introduce(OpenSpaceEventPrinciples)]
+    [Introduce(BumblebeeEffect)]
+    [Introduce(ButterflyEffect)]
+    [Introduce(FomoEffect)]
+    [Introduce(SessionPrinciples)]
+    public void Start()
     {
-        Debug.Assert(participants != null, "Participant list must not be null.");
-        Debug.Assert(participants.All(p => p.IsWilling),
-            "All participants must be willing — whoever comes are the right people.");
+        GenerateMarketplace();
+        ConnectParticipants();
+        LaunchSessionsParallel();
     }
 
-    [Precondition]
-    public void WheneverItStartsIsTheRightTime(DateTime actualStart)
+    private void GenerateMarketplace()
     {
-        Debug.Assert(actualStart != default);
-    }
-
-    [Invariant]
-    public void WhateverHappensIsTheOnlyThingThatCouldHave()
-    {
-        Debug.Assert(true, "Accept the emergent. Be prepared to be surprised.");
-    }
-
-    [Postcondition]
-    public void WhenItsOverItsOver(DateTime actualEnd)
-    {
-        Debug.Assert(actualEnd != default,
-            "Sessions and events should end when the energy is complete."
-            + " Reflect, appreciate, and let go. Consider what surprised or moved you.");
-    }
-
-    [Invariant]
-    public void LawOfTwoFeet(Person p)
-    {
-        Debug.Assert(p.IsLearning || p.IsContributing,
-            $"{p.Name} should move to where they can learn or contribute.");
-    }
-}
-
-[Aspect]
-public class FomoEffect
-{
-    [Advice(Target = AdviceTarget.Participant)]
-    public void ApplyFomo(Person person, List<OpenSpaceSession> parallelSessions)
-    {
-        if (parallelSessions.Count > 1)
+        foreach (var person in Participants.Where(p => p.IsHosting))
         {
-            person.MightFeelFomo = true;
+            Sessions.Add(new OpenSpaceSession
+            {
+                Topic = $"Session by {person.Name}",
+                Host = person,
+                Participants = new List<Person> { person }
+            });
         }
     }
-}
 
-[Aspect]
-public class BumblebeeEffect
-{
-    [Advice(Target = AdviceTarget.Participant)]
-    public void ApplyBumblebeeBehavior(Person person)
+    private void ConnectParticipants()
     {
-        if (person.Role == ParticipantRole.Bumblebee)
+        foreach (var person in Participants.Where(p => !p.IsHosting))
         {
-            Debug.Assert(person.IsLearning || person.IsContributing,
-                $"{person.Name} as Bumblebee must follow the Law of Two Feet.");
-            person.CrossPollinateIdeas();
+            var session = Sessions.FirstOrDefault(); // simplified selection logic
+            if (session != null)
+            {
+                session.Participants.Add(person);
+                person.JoinAsParticipant();
+            }
         }
     }
-}
 
-[Aspect]
-public class ButterflyEffect
-{
-    [Advice(Target = AdviceTarget.Participant)]
-    public void ApplyButterflyBehavior(Person person)
+    private void LaunchSessionsParallel()
     {
-        if (person.Role == ParticipantRole.Butterfly)
-        {
-            Debug.Assert(person.IsLearning || person.IsContributing,
-                $"{person.Name} as Butterfly must follow the Law of Two Feet.");
-            person.SparkSerendipity();
-        }
+        Parallel.ForEach(Sessions, session => session.Run());
     }
 }
